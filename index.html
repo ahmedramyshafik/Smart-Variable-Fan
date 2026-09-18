@@ -1,0 +1,380 @@
+Smart Variable Fan<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Variable Fan | Ahmed AI</title>
+    <style>
+        :root {
+            --primary-color: #0f172a; 
+            --accent-color: #3498db;
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --gold: #f1c40f;
+            --turbo-color: #ff4757;
+            --support-bg: #eef2ff;
+        }
+
+```
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--bg-color);
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .container {
+        max-width: 800px;
+        background: white;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border-top: 8px solid var(--primary-color);
+        position: relative;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="80" viewBox="0 0 100 80"><text x="50%" y="50%" text-anchor="middle" font-size="12" fill="rgba(0,0,0,0.04)" font-family="Arial" font-weight="900" transform="rotate(-25 50 40)">AHMED</text></svg>');
+    }
+
+    .animated-title { text-align: center; font-size: 2.5em; color: var(--primary-color); animation: floatText 3s infinite; }
+    @keyframes floatText { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+    .logo-container { text-align: center; margin: 30px 0; }
+    .project-image { width: 350px; border-radius: 20px; cursor: pointer; transition: 0.3s; border: 3px solid transparent; }
+    .project-image:hover { border-color: var(--accent-color); transform: scale(1.02); }
+    
+    .gear-display { font-size: 80px; margin: 20px 0; display: inline-block; transition: 0.3s; }
+    @keyframes gearSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .turbo-glow { color: var(--turbo-color); filter: drop-shadow(0 0 15px var(--turbo-color)); }
+
+    .control-panel { background: rgba(249, 249, 249, 0.8); padding: 20px; border-radius: 10px; text-align: center; border: 1px solid #ddd; margin-bottom: 30px; }
+    .ai-status-box { background: var(--primary-color); color: var(--gold); padding: 5px 15px; border-radius: 20px; display: inline-block; margin-bottom: 10px; font-size: 0.8em; font-weight: bold; }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 20px 0; }
+    .stat-card { background: var(--primary-color); color: white; padding: 15px; border-radius: 8px; border-bottom: 4px solid var(--gold); font-family: monospace; }
+    
+    .quiz-box { background: #f8fafc; border: 2px dashed var(--accent-color); padding: 25px; border-radius: 15px; margin: 20px 0; text-align: center; }
+    .level-progress { display: flex; justify-content: space-between; margin-bottom: 15px; max-width: 200px; margin-left: auto; margin-right: auto; }
+    .level-dot { width: 25px; height: 25px; line-height: 25px; border-radius: 50%; background: #ddd; font-size: 0.7em; font-weight: bold; }
+    .level-dot.active { background: var(--gold); color: var(--primary-color); transform: scale(1.2); }
+    .level-dot.done { background: var(--accent-color); color: white; }
+
+    .quiz-btn { background: var(--primary-color); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin: 5px; transition: 0.3s; }
+    .quiz-btn:hover { background: var(--accent-color); }
+    #quizResponse { margin-top: 15px; font-weight: bold; min-height: 24px; }
+    .score-display { font-size: 0.9em; color: var(--primary-color); margin-bottom: 10px; }
+
+    .support-box { background: var(--support-bg); border: 1px solid var(--accent-color); padding: 20px; border-radius: 12px; margin: 30px 0; text-align: center; }
+    .support-btn-static { 
+        background: #25D366; 
+        color: white; 
+        padding: 10px 25px; 
+        border-radius: 8px; 
+        font-weight: bold; 
+        display: inline-block; 
+        margin-top: 10px; 
+        cursor: default; 
+        user-select: none;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .section { margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 15px; display: flex; align-items: flex-start; gap: 15px; }
+    .section-icon { font-size: 1.5em; color: var(--accent-color); margin-top: 10px; }
+    .section-content { flex: 1; }
+    h3 { color: var(--accent-color); font-size: 0.9em; letter-spacing: 1px; margin-bottom: 10px; margin-top: 0; text-transform: uppercase; }
+
+    .star { font-size: 30px; cursor: pointer; color: #ccc; }
+    .star.selected { color: var(--gold); }
+    .saved-review { background: #f9f9f9; border-left: 5px solid var(--gold); padding: 10px; margin-bottom: 10px; border-radius: 8px; font-size: 0.9em; }
+
+    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); }
+    .modal-content { background: #fefcfc; margin: 2% auto; padding: 30px; border-radius: 20px; width: 90%; max-width: 650px; position: relative; border-top: 10px solid var(--accent-color); overflow-y: auto; max-height: 90vh; }
+    .modal-body p { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 15px; }
+    .modal-icon { color: var(--accent-color); font-size: 1.1em; margin-top: 3px; }
+    .countdown-box { background: var(--primary-color); color: white; padding: 15px; border-radius: 12px; text-align: center; margin: 20px 0; border: 2px solid var(--gold); }
+    #timer { font-family: monospace; font-size: 1.2em; font-weight: bold; color: var(--gold); }
+   
+    .math-box { background: #0f172a; color: white; padding: 15px; border-radius: 8px; text-align: center; font-family: monospace; }
+    .copyright-footer { text-align: center; margin-top: 20px; font-size: 0.8em; color: #94a3b8; border-top: 1px solid #eee; padding-top: 10px; }
+    input[type="text"], textarea { width: 90%; padding: 10px; margin: 5px 0; border-radius: 5px; border: 1px solid #ccc; font-family: inherit; }
+</style>
+```
+
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="animated-title">Smart Variable Fan</h1>
+        <p style="text-align: center; color: #7f8c8d;">Powered by Ahmed AI Technology</p>
+
+```
+    <div class="logo-container">
+        <img src="moody.jpeg" alt="Ahmed AI" class="project-image" onclick="openModal()">
+        <p style="color: var(--accent-color); font-weight: bold;">(Click Photo to view Ahmed AI Profile 🚀)</p>
+    </div>
+
+    <div class="control-panel">
+        <div class="ai-status-box">AI COMMENT: <span id="aiComment">System Ready</span></div><br>
+        <h3>Smart Fan Testing</h3>
+        <div id="gear" class="gear-display">⚙️</div>
+        <p>Adjust Speed (Potentiometer):</p>
+        <input type="range" id="speedSlider" min="0" max="100" value="30" style="width: 80%;" oninput="updateFan()">
+       
+        <div class="stats-grid">
+            <div class="stat-card">Voltage: <br>6.0V</div>
+            <div class="stat-card">Current: <br><span id="ampVal">0.12</span>A</div>
+            <div class="stat-card">Power: <br><span id="wattVal">0.72</span>W</div>
+            <div class="stat-card">Resistance: <br><span id="resVal">50.0</span>Ω</div>
+        </div>
+    </div>
+
+    <div class="quiz-box">
+        <h3>🔬 Ahmed AI Science Challenge</h3>
+        <div class="score-display">Current Score: <span id="liveScore">0</span></div>
+        <div class="level-progress">
+            <div class="level-dot" id="dot0">1</div>
+            <div class="level-dot" id="dot1">2</div>
+            <div class="level-dot" id="dot2">3</div>
+            <div class="level-dot" id="dot3">4</div>
+            <div class="level-dot" id="dot4">5</div>
+        </div>
+        <div id="quiz-body">
+            <p id="question" style="font-weight: bold;">Loading quiz...</p>
+            <div id="options"></div>
+        </div>
+        <div id="quizResponse"></div>
+    </div>
+
+    <div class="section">
+        <div class="section-icon">ℹ️</div>
+        <div class="section-content">
+            <h3>About</h3>
+            <p style="line-height: 1.6;">battery is about 6800 mAh that produces 3.7 volts .</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-icon">🎯</div>
+        <div class="section-content">
+            <h3>Objectives</h3>
+            <ul style="padding-left: 20px; line-height: 1.6;">
+                <li>To design a manual control system that regulates the speed of a DC motor, demonstrating energy efficiency and airflow management.</li>
+                <li>To design a system that is charged by solar panel , demonstrating energy efficiency .</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-icon">🌟</div>
+        <div class="section-content">
+            <h3>Features</h3>
+            <p style="line-height: 1.6;">Smooth Analog Speed Transition , Energy-Efficient Power Consumption , ​Safe & Durable Design , Controlling wireless with remote , open and close with key , controlling its speed , lighting while working , warn when it is fully charged , can be charged by cable or by the solar panel , can light up in dark strongly , can be handled or can be on the holder .</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-icon">⚠️</div>
+        <div class="section-content">
+            <h3>Cons</h3>
+            <p style="line-height: 1.6;">producing sound while working , turning blades can cause dangerous injuries .</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-icon">🛠️</div>
+        <div class="section-content">
+            <h3>Needs</h3>
+            <p style="line-height: 1.6;">blades , dc motor (6v) , plastic , Switch , wires , USB-C Lithium Battery Charging Module , battery holder , battery 3v , motherboard , charging cable , solar panel *6v* , leds , blades . <br> Charging cable needed : produces 5.0 volts and 10 watt .</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-icon">📡</div>
+        <div class="section-content">
+            <h3>Scientific Principle (Ohm’s Law)</h3>
+            <div class="math-box">V = I × R</div>
+            <p style="font-size: 0.9em; margin-top: 10px; line-height: 1.6;">"The circuit follows the law: V = I times R. I means intensity current. V means voltage. R means resistant. Increasing the resistance reduces the current (I), which slows down the fan, while decreasing resistance makes it spin faster."</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-icon">👶</div>
+        <div class="section-content">
+            <h3>Age</h3>
+            <p style="line-height: 1.6;">can't be used for ages less than three years old.</p>
+        </div>
+    </div>
+
+    <div class="support-box">
+        <h3>🛠️ AHMED AI SUPPORT</h3>
+        <p>Project Engineer : Ahmed Ramy *Moody*</p>
+        <div class="support-btn-static">Support: 01120338183</div>
+    </div>
+
+    <div style="margin-top: 20px;">
+        <p style="font-weight: bold;">Ahmed AI Rating & Feedback:</p>
+        <div id="star-container">
+            <span class="star" onclick="rate(1)">★</span><span class="star" onclick="rate(2)">★</span><span class="star" onclick="rate(3)">★</span><span class="star" onclick="rate(4)">★</span><span class="star" onclick="rate(5)">★</span>
+        </div>
+        <input type="text" id="reviewerName" placeholder="Enter your name">
+        <textarea id="reviewNotes" placeholder="Write your notes (Optional)"></textarea>
+        <button class="quiz-btn" onclick="saveReview()">Post Review</button>
+        <div id="reviews-display-area"></div>
+    </div>
+
+    <div class="copyright-footer">
+        © 2026 Ahmed AI Technology. Designed & Engineered by Ahmed Ramy (Moody).
+    </div>
+</div>
+
+<div id="aiModal" class="modal">
+    <div class="modal-content">
+        <span style="position:absolute; right:20px; top:15px; cursor:pointer; font-size:28px" onclick="closeModal()">&times;</span>
+        <div style="text-align: center; margin-bottom: 20px;">
+            <div style="display: inline-block; width: 60px; height: 60px; line-height: 60px; border: 4px solid var(--primary-color); border-radius: 50%; font-size: 35px; font-weight: bold; color: var(--accent-color);">A</div>
+            <h2 style="margin: 10px 0 0 0;">Ahmed AI Company Profile 🚀</h2>
+            <p style="color: #7f8c8d;">Future Engineer: Ahmed</p>
+        </div>
+        <div class="countdown-box">
+            <div>TIME REMAINING UNTIL THE BIG GOAL (2038)</div>
+            <div id="timer">Calculating...</div>
+        </div>
+        <div class="modal-body" style="line-height: 1.6;">
+            <p><span class="modal-icon">👁️‍🗨️</span><span><strong>My Future Vision:</strong><br>Let me tell you about my future job. My future job is to be an Engineer. I will be a famous man. A lot of people will need help from me. I will create robots. I will code robots, too. I will study a lot. I will be like Elon Musk and better than him. I will control the world.</span></p>
+            <p><span class="modal-icon">🆔</span><span><strong>Company Identity:</strong><br>I will build a company. I will call it (Ahmed AI). I will put this icon (A) on it. This icon explains the word (Ahmed AI).</span></p>
+            <p><span class="modal-icon">🏆</span><span><strong>Achievements:</strong><br>On these days, I try to make many things about this job and I could make this. I made a monorail and a fan, and etc...</span></p>
+            <p><span class="modal-icon">📅</span><span><strong>The Big Goal (2038):</strong><br>I will make my dream come true in 2038 when I will be twenty-five years old because I will be an adult and I will be able to use dangerous things. I will be a rich man.</span></p>
+            <h3 style="text-align: center; color: var(--primary-color); border: none; margin-top: 20px;">Good bye.</h3>
+        </div>
+    </div>
+</div>
+
+<script>
+    const quizLevels = [
+        { q: "LEVEL 1: Can the fan light in the dark by controlling it?", a: "Yes", ops: ["No", "Yes", "none of the previous"] },
+        { q: "LEVEL 2: Which scientific law explains the voltage, current, and resistance relationship?", a: "Ohm’s Law", ops: ["Newton's Law", "Ohm’s Law", "Einstein’s Theory"] },
+        { q: "LEVEL 3: If you want the fan to spin faster, you should...", a: "Decrease Resistance", ops: ["Increase Resistance", "Decrease Resistance", "Turn off"] },
+        { q: "LEVEL 4: What is the power (W) if Voltage is 6V and Current is 0.2A?", a: "1.2W", ops: ["0.6W", "1.2W", "3.0W"] },
+        { q: "LEVEL 5: In Ahmed AI's vision, what year will his big goal come true?", a: "2038", ops: ["2030", "2038", "2045"] }
+    ];
+
+    let currentLevelIndex = 0;
+    let finalScore = 0;
+
+    function loadQuiz() {
+        if (currentLevelIndex >= quizLevels.length) {
+            showQuizEnd();
+            return;
+        }
+        document.getElementById('liveScore').innerText = finalScore;
+        for(let i=0; i<5; i++) {
+            const dot = document.getElementById(`dot${i}`);
+            if(dot) {
+                dot.className = "level-dot";
+                if(i < currentLevelIndex) dot.classList.add('done');
+                if(i === currentLevelIndex) dot.classList.add('active');
+            }
+        }
+        const q = quizLevels[currentLevelIndex];
+        document.getElementById('question').innerText = q.q;
+        const opsDiv = document.getElementById('options');
+        opsDiv.innerHTML = q.ops.map(o => `<button class="quiz-btn" onclick="checkAnswer('${o}')">${o}</button>`).join('');
+    }
+
+    function checkAnswer(ans) {
+        const res = document.getElementById('quizResponse');
+        if(ans === quizLevels[currentLevelIndex].a) {
+            finalScore += 20;
+            res.innerHTML = "<span style='color:#27ae60'>Correct! +20 Points 🚀</span>";
+            setTimeout(() => {
+                currentLevelIndex++;
+                res.innerText = "";
+                loadQuiz();
+            }, 1000);
+        } else {
+            finalScore -= 5;
+            if(finalScore < 0) finalScore = 0;
+            document.getElementById('liveScore').innerText = finalScore;
+            res.innerHTML = "<span style='color:#e74c3c'>Wrong! -5 Points. Try again. ❌</span>";
+        }
+    }
+
+    function showQuizEnd() {
+        document.getElementById('quiz-body').innerHTML = `
+            <div style="padding: 10px;">
+                <h2 style="color:var(--gold)">CHALLENGE COMPLETE! 🏆</h2>
+                <p>Ahmed AI is proud of you!</p>
+                <div style="font-size: 2.5em; font-weight: bold; margin: 15px 0;">Final Score: ${finalScore}</div>
+                <p style="color: var(--accent-color); font-weight: bold;">Future Engineer Achievement Unlocked!</p>
+            </div>
+        `;
+        document.getElementById('quizResponse').innerText = "";
+    }
+
+    function updateFan() {
+        const speed = document.getElementById('speedSlider').value;
+        const gear = document.getElementById('gear');
+        const aiComment = document.getElementById('aiComment');
+        if(speed > 0) {
+            const duration = 2 / (speed / 5 + 0.1); 
+            gear.style.animation = `gearSpin ${duration}s linear infinite`;
+            if(speed == 100) { gear.classList.add('turbo-glow'); aiComment.innerText = "TURBO MODE ACTIVE! 🚀🔥"; }
+            else { gear.classList.remove('turbo-glow'); aiComment.innerText = "System running smoothly... ✅"; }
+        } else { gear.style.animation = 'none'; aiComment.innerText = "System Standby."; }
+        const v = 6.0;
+        const i = (0.05 + (speed / 200)).toFixed(2);
+        document.getElementById('ampVal').innerText = i;
+        document.getElementById('wattVal').innerText = (v * i).toFixed(2);
+        document.getElementById('resVal').innerText = (v / i).toFixed(1);
+    }
+
+    let currentRating = 0;
+    function rate(n) {
+        currentRating = n;
+        document.querySelectorAll('.star').forEach((s, i) => s.classList.toggle('selected', i < n));
+    }
+    function saveReview() {
+        const name = document.getElementById('reviewerName').value || "Guest";
+        const notes = document.getElementById('reviewNotes').value || "";
+        if(currentRating === 0) return alert("Select stars!");
+        let reviews = JSON.parse(localStorage.getItem('fanReviews')) || [];
+        reviews.unshift({ name, stars: currentRating, notes });
+        localStorage.setItem('fanReviews', JSON.stringify(reviews));
+        displayReviews();
+        document.getElementById('reviewerName').value = ""; document.getElementById('reviewNotes').value = ""; rate(0);
+    }
+
+    function displayReviews() {
+        const area = document.getElementById('reviews-display-area');
+        const reviews = JSON.parse(localStorage.getItem('fanReviews')) || [];
+        area.innerHTML = reviews.map(r => `
+            <div class="saved-review">
+                <strong>${r.name}</strong> <span style="color:#f1c40f">${'★'.repeat(r.stars)}</span>
+                ${r.notes ? `<p style="margin:5px 0 0 0; color:#666; font-style:italic">"${r.notes}"</p>` : ''}
+            </div>`).join('');
+    }
+
+    function openModal() { document.getElementById("aiModal").style.display = "block"; }
+    function closeModal() { document.getElementById("aiModal").style.display = "none"; }
+
+    function updateCountdown() {
+        const target = new Date("January 1, 2038 00:00:00").getTime();
+        const now = new Date().getTime();
+        const diff = target - now;
+        const y = Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
+        const d = Math.floor((diff % (1000 * 60 * 60 * 24 * 365.25)) / (1000 * 60 * 60 * 24));
+        const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((diff % (1000 * 60)) / 1000);
+        document.getElementById("timer").innerHTML = `${y}y ${d}d ${h}h ${m}m ${s}s`;
+    }
+
+    setInterval(updateCountdown, 1000);
+    window.onload = function() { displayReviews(); updateFan(); updateCountdown(); loadQuiz(); };
+</script>
+```
+
+</body>
+</html>
